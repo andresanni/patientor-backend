@@ -17,4 +17,10 @@ const addPatient = (patient : NewPatient) : Patient => {
     data.push(newPatient);
   return newPatient;
 };
-export default { getAll , addPatient};
+
+const getById = (id:string) : Patient | undefined => {
+  const patient = data.find(patient=> patient.id===id);
+  return patient;
+};
+
+export default { getAll , addPatient, getById};

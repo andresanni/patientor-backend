@@ -4,7 +4,6 @@ import diagnoseRouter from "./routes/diagnoses";
 import patientRouter from "./routes/patients";
 
 const app = express();
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 app.use(cors());
 app.use(express.json());
 app.use("/api/diagnoses", diagnoseRouter);

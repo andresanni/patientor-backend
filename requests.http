@@ -1,3 +1,17 @@
 GET http://localhost:3001/api/diagnoses
 ###
 GET http://localhost:3001/api/patients
+
+###
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+        "name": "Kun Aguero Luukkainen",
+        "dateOfBirth": "1971-04-09",
+        "ssn": "090471-8890",
+        "gender": "male",
+        "occupation": "evangelist"
+}
+###
+GET http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667
