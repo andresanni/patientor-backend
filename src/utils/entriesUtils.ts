@@ -2,11 +2,14 @@ import {
   HealthCheckEntry,
   OccupationalHealthCareEntry,
   Entry,
-  HealthCheckRating,
   HospitalEntry,
 } from "../types";
-
-import { parseDate } from "./patientsUtils";
+import {
+  parseDate,
+  parseString,
+  parseType,
+  parseHealthCheckRating,
+} from "./parsers";
 
 export const toValidEntry = (object: unknown): Entry => {
   if (!object || typeof object !== "object") {
@@ -26,10 +29,10 @@ export const toValidEntry = (object: unknown): Entry => {
   }
 
   const newEntry = {
-    id: parseId(object.id),
-    description: parseDescription(object.description),
+    id: parseString(object.id, "id"),
+    description: parseString(object.description, "description"),
     date: parseDate(object.date),
-    specialist: parseSpecialist(object.specialist),
+    specialist: parseString(object.specialist, "specialist"),
     type: parseType(object.type) as
       | "HealthCheck"
       | "OccupationalHealthcare"
@@ -56,7 +59,7 @@ export const toValidEntry = (object: unknown): Entry => {
     const newOccupationalEntry: OccupationalHealthCareEntry = {
       ...newEntry,
       type: "OccupationalHealthcare",
-      employerName: parseEmployerName(object.employerName),
+      employerName: parseString(object.employerName, "employer name"),
     };
     return newOccupationalEntry;
   }
@@ -76,7 +79,7 @@ export const toValidEntry = (object: unknown): Entry => {
       ...newEntry,
       type: "Hospital",
       discharge: {
-        criteria: parseCriteria(object.discharge.criteria),
+        criteria: parseString(object.discharge.criteria, "criteria"),
         date: parseDate(object.discharge.date),
       },
     };
@@ -84,66 +87,4 @@ export const toValidEntry = (object: unknown): Entry => {
   }
 
   throw new Error("Invalid Entry " + JSON.stringify(object));
-};
-
-//parsers
-const parseId = (id: unknown): string => {
-  if (!isString(id)) {
-    throw new Error("Incorrect or missing id " + id);
-  }
-  return id;
-};
-
-const parseDescription = (arg: unknown): string => {
-  if (!isString(arg)) {
-    throw new Error("Incorrect or missing entry description" + arg);
-  }
-  return arg;
-};
-
-const parseSpecialist = (arg: unknown): string => {
-  if (!isString(arg)) {
-    throw new Error("Incorrect or missing entry specialist" + arg);
-  }
-  return arg;
-};
-
-const parseType = (arg: unknown): string => {
-  if (
-    !isString(arg) ||
-    !["HealthCheck", "OccupationalHealthcare", "Hospital"].includes(arg)
-  ) {
-    throw new Error("Incorrect or missing entry type" + arg);
-  }
-  return arg;
-};
-
-const parseHealthCheckRating = (arg: unknown): HealthCheckRating => {
-  if (typeof arg !== "number" || !isHealthCheckRating(arg)) {
-    throw new Error("Incorrect or missing Health Check Rating" + arg);
-  }
-  return arg;
-};
-
-const parseEmployerName = (arg: unknown): string => {
-  if (!isString(arg)) {
-    throw new Error("Incorrect or missing Employer name" + arg);
-  }
-  return arg;
-};
-
-const parseCriteria = (arg: unknown): string => {
-  if (!isString(arg)) {
-    throw new Error("Incorrect or missing Criteria" + arg);
-  }
-  return arg;
-};
-
-//type guards
-const isString = (arg: unknown): arg is string => {
-  return typeof arg === "string" || arg instanceof String;
-};
-
-const isHealthCheckRating = (arg: number): arg is HealthCheckRating => {
-  return Object.values(HealthCheckRating).includes(arg);
 };
