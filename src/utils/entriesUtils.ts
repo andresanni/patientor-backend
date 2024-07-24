@@ -1,7 +1,7 @@
 import { toValidHealthCheckEntry } from "./healthCheckEntryUtils";
 import { toValidHospital } from "./hospitalEntryUtils";
 import { toValidOccupationalHealthCare } from "./occupationalHealthcare";
-import { Entry } from "../types";
+import {  EntryWithoutId } from "../types";
 
 const assertNever = (value: never): never => {
   throw new Error(
@@ -9,7 +9,7 @@ const assertNever = (value: never): never => {
   );
 };
 
-export const toValidEntry = (object: unknown): Entry => {
+export const toValidEntry = (object: unknown): EntryWithoutId => {
   
   if(typeof object != "object" || !object || !("type" in object)){
     throw new Error("No valid Entry type");

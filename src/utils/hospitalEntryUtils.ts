@@ -1,7 +1,7 @@
 import { HospitalEntry } from "../types";
-import { parseString, parseDate } from "./parsers";
+import { parseString, parseDate, parseDiagnosisCodes } from "./parsers";
 
-export const toValidHospital = (object: unknown): HospitalEntry => {
+export const toValidHospital = (object: unknown): Omit<HospitalEntry,"id"> => {
   if (!object || typeof object !== "object") {
     throw new Error("Incorrect or missing data " + object);
   }
@@ -12,7 +12,6 @@ export const toValidHospital = (object: unknown): HospitalEntry => {
       "date" in object &&
       "specialist" in object &&
       "type" in object &&
-      "id" in object &&
       "discharge" in object &&
       typeof object.discharge === "object" &&
       object.discharge &&
@@ -24,7 +23,6 @@ export const toValidHospital = (object: unknown): HospitalEntry => {
   }
 
   const newEntry = {
-    id: parseString(object.id, "id"),
     description: parseString(object.description, "description"),
     date: parseDate(object.date),
     specialist: parseString(object.specialist, "specialist"),
@@ -34,6 +32,13 @@ export const toValidHospital = (object: unknown): HospitalEntry => {
       date: parseDate(object.discharge.date),
     },
   };
+
+  if("diagnosisCodes" in object ){
+    const newEntryWithDiagnosisCodes = {...newEntry,
+      diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+    };
+    return newEntryWithDiagnosisCodes;
+  }
 
   return newEntry;
 };

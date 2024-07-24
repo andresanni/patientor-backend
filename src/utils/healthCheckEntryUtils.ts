@@ -1,7 +1,7 @@
 import { HealthCheckEntry } from "../types";
-import { parseString, parseDate, parseHealthCheckRating } from "./parsers";
+import { parseString, parseDate, parseHealthCheckRating, parseDiagnosisCodes} from "./parsers";
 
-export const toValidHealthCheckEntry = (object: unknown): HealthCheckEntry => {
+export const toValidHealthCheckEntry = (object: unknown): Omit<HealthCheckEntry,"id"> => {
   if (!object || typeof object !== "object") {
     throw new Error("Incorrect or missing data " + object);
   }
@@ -12,7 +12,6 @@ export const toValidHealthCheckEntry = (object: unknown): HealthCheckEntry => {
       "date" in object &&
       "specialist" in object &&
       "type" in object &&
-      "id" in object &&
       "healthCheckRating" in object
     )
   ) {
@@ -20,13 +19,19 @@ export const toValidHealthCheckEntry = (object: unknown): HealthCheckEntry => {
   }
 
   const newEntry = {
-    id: parseString(object.id, "id"),
     description: parseString(object.description, "description"),
     date: parseDate(object.date),
     specialist: parseString(object.specialist, "specialist"),
     type: "HealthCheck" as const,
-    healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+    healthCheckRating: parseHealthCheckRating(object.healthCheckRating),    
   };
+
+  if("diagnosisCodes" in object ){
+    const newEntryWithDiagnosisCodes = {...newEntry,
+      diagnosisCodes: parseDiagnosisCodes(object.diagnosisCodes)
+    };
+    return newEntryWithDiagnosisCodes;
+  }
 
   return newEntry;
 };
